@@ -2,12 +2,17 @@ import com.mongodb.casbah.{MongoClientURI, MongoClient, MongoDB, MongoCollection
 import play.api.Play
 
 package object db {
-  private lazy val uri = (Play.current.configuration.getString("mongo.uri"): @unchecked) match {
-    case Some(s) => s
+  private val DEFAULT_CONFIG = Map(
+    "uri" -> "mongodb://localhost",
+    "db" -> "access-log-development"
+  )
+
+  private def getConfig(name: String): String = {
+    Play.current.configuration.getString("mongo." + name).getOrElse(DEFAULT_CONFIG(name))
   }
-  private lazy val dbName = (Play.current.configuration.getString("mongo.db"): @unchecked) match {
-    case Some(s) => s
-  }
+
+  private lazy val uri = getConfig("uri")
+  private lazy val dbName = getConfig("db")
 
   def getClient = MongoClient(MongoClientURI(uri))
 

@@ -1,6 +1,6 @@
 import org.specs2.mutable._
 
-import com.mongodb.casbah.Imports.{MongoDB, MongoCollection}
+import com.mongodb.casbah.Imports.{MongoDB, MongoClient}
 
 import play.api.test._
 import play.api.test.Helpers._

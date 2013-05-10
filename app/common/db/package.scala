@@ -1,3 +1,5 @@
+package common
+
 import com.mongodb.casbah.{MongoClientURI, MongoClient, MongoDB, MongoCollection}
 import play.api.Play
 

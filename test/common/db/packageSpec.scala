@@ -1,3 +1,5 @@
+package common
+
 import org.specs2.mutable._
 
 import com.mongodb.casbah.Imports.{MongoDB, MongoClient}

@@ -1,4 +1,4 @@
-package module.db
+package common.db
 
 import com.mongodb.casbah.Imports._
 import java.util.Date

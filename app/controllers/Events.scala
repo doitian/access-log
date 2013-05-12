@@ -1,24 +1,30 @@
 package controllers
 
-import com.mongodb.casbah.Imports._
+import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.mvc.Action
 import play.api.mvc.BodyParsers.parse
 import play.api.mvc.Controller
-import play.api.libs.json.Json
-import play.api.libs.json.JsError
+import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.api._
+import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.BSONObjectID
 
-import common.db
-import common.db.MongoJson.readDBObject
+object Events extends Controller with MongoController {
+  import play.modules.reactivemongo.json.BSONFormats._
 
-object Events extends Controller {
+  def collection = db.collection[JSONCollection]("events")
+
   val create = Action(parse.json) { implicit request =>
-    request.body.validate[DBObject].map{
-      case event =>
-        db.withDB { db =>
-          db("events") += event
+    request.body.validate[BSONDocument].map {
+      case doc =>
+        val id = BSONObjectID.generate
+        Async {
+          collection.insert(doc.add("_id" -> id)).map { _ =>
+            Created(Json.obj("_id" -> Json.toJson(id)))
+          }
         }
-        Created(DBObject("_id" -> event("_id")).toString).as(JSON)
-    }.recoverTotal{
+    }.recoverTotal {
       e => BadRequest(Json.obj("error" -> JsError.toFlatJson(e)))
     }
   }

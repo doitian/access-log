@@ -66,7 +66,8 @@ object Events extends Controller with MongoController {
               "host" -> sample(hosts),
               "path" -> sample(paths),
               "referer" -> sample(referers),
-              "ts" -> BSONDateTime(from + rand.nextLong() % (60 * 60 * 24 * 30))
+              "ts" -> BSONDateTime(from - rand.nextLong().abs % (60 * 60 * 24 * 30 * 1000)),
+              "length" -> rand.nextInt(1000)
             )
 
             collection.insert(doc)

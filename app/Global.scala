@@ -23,11 +23,8 @@ object Global extends GlobalSettings {
 
     def receive = {
       case _ => {
-        println("RUN")
         getLastRun().map { lastRun =>
           val cutOff = System.currentTimeMillis() - (60 * 1000)
-          println("lastRun=" + lastRun)
-          println("cutOff=" + cutOff)
           models.Event.mapReduce(lastRun, cutOff).map { _ =>
             setLastRun(cutOff)
           }

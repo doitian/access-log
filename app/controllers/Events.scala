@@ -34,6 +34,16 @@ object Events extends Controller with MongoController {
       }
   }
 
+  def stats(by: String, unit: String) = Action { implicit request =>
+    val collection = db.collection[JSONCollection](s"stats.$by.$unit")
+    Async {
+      val cursor = collection.find(BSONDocument()).cursor[JsObject]
+      cursor.toList.map { objects =>
+        Ok(Json.arr(objects))
+      }
+    }
+  }
+
   val create = Action(parse.json) { implicit request =>
     implicit val reads = readNewBSONDocument
 

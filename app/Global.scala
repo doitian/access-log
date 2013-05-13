@@ -1,11 +1,12 @@
 import akka.actor.{Actor, Props}
+import com.typesafe.config.ConfigFactory
+import java.io.File
 import play.api._
 import play.api.libs.concurrent.Akka
 import play.modules.reactivemongo.ReactiveMongoPlugin
 import reactivemongo.api.collections.default.BSONCollection
-import reactivemongo.bson.{BSONDocument, BSONValue}
-import reactivemongo.core.commands.LastError
-import reactivemongo.core.commands.GetLastError
+import reactivemongo.bson.BSONDocument
+import reactivemongo.core.commands.{GetLastError, LastError}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -49,7 +50,7 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     import play.api.libs.concurrent.Execution.Implicits._
     import play.api.Play.current
- 
+
     val myActor = Akka.system.actorOf(Props[EventsMapReduce], name = "EventsMapReduce")
 
     Akka.system.scheduler.schedule(
@@ -58,5 +59,10 @@ object Global extends GlobalSettings {
       myActor,
       "EventsMapReduce"
     )
+  }
+
+  override def onLoadConfig(config: Configuration, path: File, classloader: ClassLoader, mode: Mode.Mode): Configuration = {
+    val modeSpecificConfig = config ++ Configuration(ConfigFactory.load(s"application.${mode.toString.toLowerCase}.conf"))
+    super.onLoadConfig(modeSpecificConfig, path, classloader, mode)
   }
 }
